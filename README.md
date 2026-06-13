@@ -173,7 +173,7 @@ All API responses are normalized and require a Bearer token in the `Authorizatio
    ```env
    SUPABASE_URL=https://<your-project>.supabase.co
    SUPABASE_KEY=<your-service-role-key>
-   DATABASE_URL=postgresql+asyncpg://postgres.bwyurvyzmmzvlldbjokf:Saiprasad25@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres
+   DATABASE_URL=postgresql+asyncpg://postgres.bwyurvyzmmzvlldbjokf:<your-password>@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres
    NASA_API_KEY=<your-nasa-developer-key>
    REDIS_URL=  # Leave empty for MemoryCache
    JWT_SECRET_KEY=<generate-a-secure-random-256-bit-key>
@@ -244,7 +244,7 @@ python -m pytest
    * **Start Command**: `alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 4. Set the **Environment Variables**:
    * `APP_ENV`: `production`
-   * `DATABASE_URL`: `postgresql+asyncpg://postgres.bwyurvyzmmzvlldbjokf:Saiprasad25@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres` (Verified Session Pooler URL)
+   * `DATABASE_URL`: `postgresql+asyncpg://postgres.bwyurvyzmmzvlldbjokf:<your-password>@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres` (Verified Session Pooler URL)
    * `ALLOWED_ORIGINS`: `http://localhost:8081,https://space-today-puuc.vercel.app` (add your production Vercel URL)
    * `SUPABASE_URL`: `https://bwyurvyzmmzvlldbjokf.supabase.co`
    * `SUPABASE_KEY`: `<your-supabase-service-role-key>`
@@ -287,7 +287,7 @@ During the deployment of this project to production, several compatibility and n
     1.  **Region/Host mismatch**: Supabase has migrated newer projects to their new `aws-1` routing networks. The correct host is `aws-1-ap-northeast-2.pooler.supabase.com` (Seoul region, `aws-1` cluster).
     2.  **Special characters in password**: The database password originally contained `@` (written as URL-encoded `%40` in the connection string). The pooler proxy fails to parse or authenticate URL-encoded strings correctly, throwing a generic "tenant not found" error.
 *   **The Fix**: 
-    1.  Reset the database password in the Supabase settings page to `Saiprasad25` (removing all special characters to avoid URL-encoding issues).
+    1.  Reset the database password in the Supabase settings page to a new alphanumeric password (removing all special characters to avoid URL-encoding issues).
     2.  Updated the connection string host to the exact `aws-1-ap-northeast-2.pooler.supabase.com` domain shown in the Connect sheet.
 
 ### 5. SQLAlchemy transaction pooling error: `DuplicatePreparedStatementError`

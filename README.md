@@ -173,7 +173,7 @@ All API responses are normalized and require a Bearer token in the `Authorizatio
    ```env
    SUPABASE_URL=https://<your-project>.supabase.co
    SUPABASE_KEY=<your-service-role-key>
-   DATABASE_URL=postgresql+asyncpg://postgres.bwyurvyzmmzvlldbjokf:<your-password>@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres
+   DATABASE_URL=postgresql+asyncpg://postgres.<your-project-id>:<your-password>@aws-1-<your-region>.pooler.supabase.com:5432/postgres
    NASA_API_KEY=<your-nasa-developer-key>
    REDIS_URL=  # Leave empty for MemoryCache
    JWT_SECRET_KEY=<generate-a-secure-random-256-bit-key>
@@ -244,11 +244,11 @@ python -m pytest
    * **Start Command**: `alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 4. Set the **Environment Variables**:
    * `APP_ENV`: `production`
-   * `DATABASE_URL`: `postgresql+asyncpg://postgres.bwyurvyzmmzvlldbjokf:<your-password>@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres` (Verified Session Pooler URL)
-   * `ALLOWED_ORIGINS`: `http://localhost:8081,https://space-today-puuc.vercel.app` (add your production Vercel URL)
-   * `SUPABASE_URL`: `https://bwyurvyzmmzvlldbjokf.supabase.co`
+   * `DATABASE_URL`: `postgresql+asyncpg://postgres.<your-project-id>:<your-password>@aws-1-<your-region>.pooler.supabase.com:5432/postgres` (Verified Session Pooler URL)
+   * `ALLOWED_ORIGINS`: `http://localhost:8081,https://<your-vercel-domain>.vercel.app` (add your production Vercel URL)
+   * `SUPABASE_URL`: `https://<your-project-id>.supabase.co`
    * `SUPABASE_KEY`: `<your-supabase-service-role-key>`
-   * `NASA_API_KEY`: `wqtCayIdvt0nViFXusGpcJAzpigOSlgkfElDcDdS`
+   * `NASA_API_KEY`: `<your-nasa-developer-key>`
    * `JWT_SECRET_KEY`: `<your-secure-jwt-key>`
 
 ---
@@ -277,11 +277,11 @@ During the deployment of this project to production, several compatibility and n
 *   **The Fix**: Created a `.python-version` file containing `3.11.9` in both the repository root and `backend/` directories. This forced Render to build using a stable Python 3.11.9 runtime, allowing it to download the precompiled binary wheel instantly.
 
 ### 3. Database connection: `OperationalError: Network is unreachable` on Render
-*   **The Issue**: The backend crashed on startup when trying to run migrations directly on `db.bwyurvyzmmzvlldbjokf.supabase.co`.
+*   **The Issue**: The backend crashed on startup when trying to run migrations directly on `db.<your-project-id>.supabase.co`.
 *   **The Cause**: Supabase's direct database domains are IPv6-only. Render's build servers and web services do not have outbound IPv6 routing enabled on their container hosts, making the direct host completely unreachable.
 *   **The Fix**: Switched from the direct database domain to Supabase's connection pooler hosts, which resolve to IPv4 addresses.
 
-### 4. Pooler connection: `FATAL: (ENOTFOUND) tenant/user postgres.bwyurvyzmmzvlldbjokf not found`
+### 4. Pooler connection: `FATAL: (ENOTFOUND) tenant/user postgres.<your-project-id> not found`
 *   **The Issue**: Connecting to `aws-0-ap-south-1.pooler.supabase.com` or `aws-0-ap-northeast-2.pooler.supabase.com` threw a routing error.
 *   **The Cause**: 
     1.  **Region/Host mismatch**: Supabase has migrated newer projects to their new `aws-1` routing networks. The correct host is `aws-1-ap-northeast-2.pooler.supabase.com` (Seoul region, `aws-1` cluster).
